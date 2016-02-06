@@ -206,7 +206,7 @@ function create_config( )
   config = {
     enabled_plugins = {
       "banhammer",
-      "arabic_lock",
+      "filtering",
       "channels",
       "greeter",
       "join",
