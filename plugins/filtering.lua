@@ -4,11 +4,11 @@ local function save_filter(msg, name, value)
 		hash = 'chat:'..msg.to.id..':filters'
 	end
 	if msg.to.type == 'user' then
-		return 'فقط در گروه'
+		return 'only work in group'
 	end
 	if hash then
 		redis:hset(hash, name, value)
-		return "انجام شد"
+		return "ok!"
 	end
 end
 
@@ -20,12 +20,12 @@ end
 
 local function list_filter(msg)
 	if msg.to.type == 'user' then
-		return 'فقط در گروه'
+		return 'only work in group'
 	end
 	local hash = get_filter_hash(msg)
 	if hash then
 		local names = redis:hkeys(hash)
-		local text = 'لیست کلمات فیلتر شده:\n______________________________\n'
+		local text = 'filterlist\n______________________________\n'
 		for i=1, #names do
 			text = text..'> '..names[i]..'\n'
 		end
@@ -38,9 +38,9 @@ local function get_filter(msg, var_name)
 	if hash then
 		local value = redis:hget(hash, var_name)
 		if value == 'msg' then
-			return 'کلمه ی کاربردی شما ممنوع است، در صورت تکرار با شما برخورد خواهد شد'
+			return 'dont send again'
 		elseif value == 'kick' then
-			send_large_msg('chat#id'..msg.to.id, "به دلیل عدم رعایت قوانین گفتاری از ادامه ی گفتوگو محروم میشوید")
+			send_large_msg('chat#id'..msg.to.id, "this word is filter bye"
 			chat_del_user('chat#id'..msg.to.id, 'user#id'..msg.from.id, ok_cb, true)
 		end
 	end
@@ -51,11 +51,11 @@ local function get_filter_act(msg, var_name)
 	if hash then
 		local value = redis:hget(hash, var_name)
 		if value == 'msg' then
-			return 'اخطار و تذکر به این کلمه'
+			return 'hey'
 		elseif value == 'kick' then
-			return 'این کلمه ممنوع است و حذف خواهید شد'
+			return 'this word is filter and i kick you
 		elseif value == 'none' then
-			return 'این کلمه از فیلتر خارج شده است'
+			return 'this remove from filtelist'
 		end
 	end
 end
@@ -68,7 +68,7 @@ local function run(msg, matches)
 		if data[tostring(msg.to.id)] then
 			local settings = data[tostring(msg.to.id)]['settings']
 			if not is_momod(msg) then
-				return "شما مدير نيستيد"
+				return "youre not admin"
 			else
 				local value = 'msg'
 				local name = string.sub(matches[3]:lower(), 1, 1000)
@@ -76,11 +76,11 @@ local function run(msg, matches)
 				return text
 			end
 		end
-	elseif matches[1] == "ilter" and matches[2] == "+" then
+	elseif matches[1] == "filter" and matches[2] == "+" then
 		if data[tostring(msg.to.id)] then
 			local settings = data[tostring(msg.to.id)]['settings']
 			if not is_momod(msg) then
-				return "شما مدير نيستيد"
+				return "youre not admin"
 			else
 				local value = 'kick'
 				local name = string.sub(matches[3]:lower(), 1, 1000)
@@ -88,11 +88,11 @@ local function run(msg, matches)
 				return text
 			end
 		end
-	elseif matches[1] == "ilter" and matches[2] == "-" then
+	elseif matches[1] == "filter" and matches[2] == "-" then
 		if data[tostring(msg.to.id)] then
 			local settings = data[tostring(msg.to.id)]['settings']
 			if not is_momod(msg) then
-				return "شما مدير نيستيد"
+				return "youre not admin"
 			else
 				local value = 'none'
 				local name = string.sub(matches[3]:lower(), 1, 1000)
@@ -100,7 +100,7 @@ local function run(msg, matches)
 				return text
 			end
 		end
-	elseif matches[1] == "ilter" and matches[2] == "?" then
+	elseif matches[1] == "filter" and matches[2] == "?" then
 		return get_filter_act(msg, matches[3]:lower())
 	else
 		if is_sudo(msg) then
